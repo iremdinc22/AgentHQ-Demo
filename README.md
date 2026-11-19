@@ -10,7 +10,7 @@ This repository contains the standalone, interactive public demo of AgentHQ. The
 
 ---
 
-![The interactive miniature office with the CEO composer and review desk](docs/screenshots/release/office.jpg)
+![The interactive miniature office with the CEO composer and review desk](docs/screenshots/release/office.png)
 
 ## Try a guided handoff
 
@@ -39,7 +39,7 @@ This repository contains the standalone, interactive public demo of AgentHQ. The
 | Knowledge Hub | Cat | Connects fictional notes and relevant references |
 | Game Studio | Red panda | Sketches mechanics, levels, and playtests |
 
-![Final agent gallery with the eight procedural portraits](docs/screenshots/release/agents.jpg)
+![Final agent gallery with the eight procedural portraits](docs/screenshots/release/agents.png)
 
 ## Projects and session history
 
