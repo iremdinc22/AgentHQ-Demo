@@ -1,0 +1,52 @@
+.contextual-panel { --agent-text:#28342c; --agent-muted:#536055; color:var(--agent-text); background:#fbfaf5; }
+.contextual-panel .agent-context-header { background:transparent; border:0; padding:14px 12px 10px; }
+.contextual-panel .agent-context-identity { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:10px; }
+.contextual-panel .agent-context-identity h2 { font-size:1.12rem; line-height:1.25; overflow-wrap:anywhere; margin:0; }
+.contextual-panel .agent-context-identity p { color:var(--agent-muted); font-size:.78rem; overflow-wrap:anywhere; margin:.25rem 0 0; }
+.contextual-panel .agent-context-identity button { display:grid; place-items:center; min-width:34px; min-height:34px; }
+.contextual-panel .context-status { margin-top:.55rem; gap:.5rem; }
+.contextual-panel .office-sidebar-tabs { padding:.3rem; background:#edeee6; border-radius:9px; gap:2px; }
+.contextual-panel .office-sidebar-tabs button { color:#47554a; min-width:0; padding:.55rem .22rem; border-radius:6px; }
+.contextual-panel .office-sidebar-tabs button[aria-selected=true] { color:#263d2c; background:#fffef8; }
+.contextual-panel .office-sidebar-tabs button:hover { background:#f7f7ef; }
+.contextual-panel :is(button,a,summary,input):focus-visible { outline:2px solid #42684a; outline-offset:2px; }
+.contextual-panel .agent-context-body { padding:12px; overflow-wrap:anywhere; font-size:.83rem; }
+.agent-context-body > section + section { border-top:1px solid #e0e3d9; padding-top:.8rem; }
+.agent-context-body > section { margin-bottom:.85rem; }
+.agent-context-body h3 { font-size:.9rem; margin:0 0 .35rem; }
+.agent-context-body p { margin:.3rem 0; }
+.agent-context-body ul { margin:.45rem 0; padding-left:1.15rem; }
+.agent-context-body li + li { margin-top:.28rem; }
+.agent-context-body small { color:var(--agent-muted); }
+.agent-assignment { display:flex; align-items:start; gap:.6rem; padding:.8rem; border:1px solid #e1e5d8; background:#f1f3ea; border-radius:9px; }
+.agent-assignment svg { flex:none; }
+.agent-primary { display:inline-flex; align-items:center; gap:.4rem; margin:0 0 1rem; padding:.55rem .75rem; border:0; border-radius:7px; background:#395843; color:#fff; cursor:pointer; }
+.agent-specialty { color:#345740; font-weight:650; }
+.agent-record { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:start; gap:.35rem .5rem; padding:.65rem 0; border-bottom:1px solid #e4e6db; }
+.agent-record small { grid-column:1/-1; }
+.agent-empty { color:var(--agent-muted); border-left:2px solid #b7c7ae; padding:.6rem .75rem; }
+.agent-context-body .agent-timeline { list-style:none; margin:0; padding:0; }
+.agent-timeline li { display:flex; align-items:start; gap:.6rem; padding:.55rem 0; border-bottom:1px solid #e4e6db; }
+.agent-timeline li svg { flex:none; margin-top:.35rem; color:#46684d; }
+.contextual-panel .chat-transcript { background:#f9faf3; border-color:#dde3d6; }
+.contextual-panel .chat-composer { background:#fffef9; border-color:#c5d3c0; }
+.contextual-panel .chat-composer .send { background:#395843; }
+.contextual-panel .message { background:#fffef9; border-color:#dce3d5; }
+.contextual-panel .message.user { background:#e8efe2; }
+.contextual-panel .message-author { display:flex; align-items:center; gap:.4rem; color:#445b48; }
+.contextual-panel .message p { font-size:.84rem; line-height:1.55; }
+.chat-starters { display:grid; gap:.4rem; padding:.45rem; }
+.chat-starters p { margin:0 0 .2rem; color:#485d4b; font-size:.78rem; }
+.chat-starters button { text-align:left; color:#334e39; background:#fffef8; border:1px solid #ccd8c8; padding:.5rem; border-radius:7px; cursor:pointer; }
+.contextual-panel .agent-context-body { background:#fffef8; border:1px solid #e3e6dc; }
+.contextual-panel .context-status small, .contextual-panel .panel-title p { color:#536055; }
+.contextual-panel .chat-transcript .panel-title { border-color:#e0e5d7; }
+.contextual-panel .chat-starters button:hover { background:#edf3e8; }
+.contextual-panel .agent-session-count { margin:0 0 .75rem; font-size:.74rem; color:#536055; }
+@media (max-width:850px) {
+  .office-chat-layout > .office-sidebar { width:100%; max-width:100%; min-width:0; box-sizing:border-box; }
+  .office-chat-layout .default-panel .operations-sidebar {
+    display:block; overflow-y:auto;
+  }
+  .office-chat-layout .default-panel .operations-sidebar > .card { margin-bottom:.65rem; }
+}

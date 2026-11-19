@@ -1,0 +1,32 @@
+import { useEffect, useRef, useState } from "react";
+import { useProjectsStore } from "./demoProjects";
+import { scenarios, scenarioExecution } from "../../data/scenarios";
+import { useOfficeStore } from "../../store/useOfficeStore";
+import type { DepartmentId } from "../../types";
+import { departmentById } from "../../departments/config";
+import { Dialog, EmptyState, Icon, PageHeader, SearchField, Status, formatDate, formatTime } from "./ui";
+export function ProjectsPage({visit}:{visit:(id:DepartmentId)=>void}) {
+ const store=useProjectsStore();
+ const [query,setQuery]=useState(""),[sort,setSort]=useState("newest"),[creating,setCreating]=useState(false),[selected,setSelected]=useState<string|null>(null),[history,setHistory]=useState(false);
+ const tasks=useOfficeStore(s=>s.tasks),messages=useOfficeStore(s=>s.messages);
+ const filtered=store.projects.filter(p=>`${p.name} ${p.description}`.toLowerCase().includes(query.trim().toLowerCase())).sort((a,b)=>sort==="name"?a.name.localeCompare(b.name):Date.parse(b.created_at)-Date.parse(a.created_at));
+ const project=store.projects.find(p=>p.id===selected);
+ const scenario=scenarios.find(item=>item.id===project?.id);
+ const linked=scenario ? tasks.filter(task=>task.prompt===scenario.goal) : [];
+ const running=useOfficeStore(s=>s.running);
+ const submit=useOfficeStore(s=>s.submit);
+ return <><PageHeader title="Projects" subtitle="A home for the ideas you want to keep." action={<button className="ws-button primary" onClick={()=>setCreating(true)}><Icon name="plus"/>New project</button>}/><div className="ws-project-layout"><div><div className="ws-toolbar standalone"><SearchField value={query} onChange={setQuery} label="Search projects" placeholder="Find a project…"/><select aria-label="Project order" value={sort} onChange={e=>setSort(e.target.value)}><option value="newest">Newest first</option><option value="name">Name A–Z</option></select><button className="ws-icon-button" aria-label="Refresh projects" onClick={()=>void store.refresh()}><Icon name="refresh"/></button></div><div className="ws-project-grid">{filtered.map((p,i)=><button className="ws-project-card" key={p.id} onClick={()=>setSelected(p.id)}><span className={`ws-folder color-${i%4}`}><Icon name="folder" size={30}/></span><h2>{p.name}</h2><p>{p.description||"No description added."}</p><footer><span>Created {formatDate(p.created_at)}</span><Icon name="arrow" size={16}/></footer></button>)}</div>{!filtered.length&&<div className="ws-panel"><EmptyState icon="folder" title={query?"No projects match your search":"Make space for a good idea"} action={!query&&<button className="ws-button" onClick={()=>setCreating(true)}><Icon name="plus" size={16}/>Create your first project</button>}>{query?"Try another name or description.":"Keep a name and a little context together. Projects stay in this demo session."}</EmptyState></div>}<p className="ws-page-footnote">{store.projects.length} loaded projects · Demo session</p></div><aside className="ws-project-aside"><section className="ws-aside-card"><Icon name="book" size={24}/><h3>Knowledge corner</h3><p>A quiet place for shared context. No files are indexed yet.</p><button className="ws-text-button" onClick={()=>visit("knowledge")}>Visit Knowledge Hub <Icon name="arrow" size={15}/></button></section><section className="ws-aside-card"><Icon name="clock" size={24}/><h3>Demo workspace</h3><p>{tasks.length} simulated tasks in this session.</p><button className="ws-text-button" onClick={()=>setHistory(true)}>Open session history <Icon name="arrow" size={15}/></button></section></aside></div>
+ {creating&&<Dialog title="New project" close={()=>setCreating(false)} eyebrow="A SPACE FOR YOUR NEXT IDEA"><ProjectForm created={id=>{setCreating(false);setSelected(id);}}/></Dialog>}
+ {project&&<Dialog title={project.name} close={()=>setSelected(null)} drawer eyebrow="DEMO PROJECT"><span className="ws-folder"><Icon name="folder" size={34}/></span><p className="ws-detail-description">{project.description||"No description added."}</p><dl className="ws-metadata"><dt>Created</dt><dd>{formatTime(project.created_at)}</dd><dt>Updated</dt><dd>{formatTime(project.updated_at)}</dd></dl><section className="ws-detail-section"><h3>Project workspace</h3>{scenario ? <>
+ <p className="ws-hint">{linked.filter(task=>task.status==="completed").length} of {linked.length} simulated runs completed</p>
+ {linked.map(task=><div className="ws-mini-task" key={task.id}><span>{task.prompt}</span><Status value={task.status}/></div>)}
+ <button className="ws-button primary" disabled={running} onClick={()=>void submit(scenario.goal,scenarioExecution(scenario),"ceo")}>Run scenario</button>
+ </> : <p>Session notes for your fictional project.</p>}</section><details className="ws-record-info"><summary>Record details</summary><code>{project.id}</code></details></Dialog>}
+ {history&&<Dialog title="Demo workspace history" close={()=>setHistory(false)} drawer eyebrow="SESSION ONLY · SIMULATED">{tasks.length?tasks.map(t=><section className="ws-detail-section" key={t.id}><h3>{t.prompt}</h3><p className="ws-hint">{departmentById[t.department].animal} · {t.status} · {formatTime(t.createdAt)}</p>{messages.filter(m=>m.taskId===t.id).map(m=><p key={m.id}>{m.text}</p>)}</section>):<EmptyState title="A quiet workspace">Run a demo in Office to begin this session's history.</EmptyState>}</Dialog>}
+ </>;
+}
+function ProjectForm({created}:{created:(id:string)=>void}) {
+ const store=useProjectsStore();const [name,setName]=useState(""),[description,setDescription]=useState("");const mounted=useRef(false);
+ useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;};},[]);
+ return <form className="ws-form" onSubmit={async e=>{e.preventDefault();if(!name.trim())return;const project=await store.save({name:name.trim(),description:description.trim()});if(project&&mounted.current)created(project.id);}}><label>Project name<input autoFocus required maxLength={120} value={name} onChange={e=>setName(e.target.value)} placeholder="A name for your next chapter"/></label><label>Description <span className="ws-optional">optional</span><textarea maxLength={20000} rows={4} value={description} onChange={e=>setDescription(e.target.value)} placeholder="What is this project about?"/></label><div className="ws-form-footer"><span className="ws-hint">Saved for this demo session</span><button className="ws-button primary" disabled={!name.trim()}>Create project</button></div></form>;
+}
