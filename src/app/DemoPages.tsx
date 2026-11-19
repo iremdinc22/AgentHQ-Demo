@@ -5,7 +5,7 @@ import { ActivityPage } from "../features/workspace/ActivityPage";
 import { SettingsPage } from "../features/workspace/SettingsPage";
 import { ProjectsPage } from "../features/workspace/ProjectsPage";
 import { departmentById } from "../departments/config";
-import { scenarios, scenarioExecution } from "../data/scenarios";
+import { scenarios } from "../data/scenarios";
 
 import { PageHeader, Portrait, Status } from "../features/workspace/ui";
 import { useOfficeStore } from "../store/useOfficeStore";
@@ -14,27 +14,19 @@ import type { DepartmentId } from "../types";
 export type DemoView = "Scenarios" | "Agents" | "Tasks" | "Projects" | "Activity" | "Settings";
 type Scenario = (typeof scenarios)[number];
 
-export function DemoPages({ view, visit, office, labels, shadows, setLabels, setShadows, stay, setStay }: {
-  view: DemoView; visit: (id: DepartmentId, tab?: AgentTab) => void; office: () => void;
+export function DemoPages({ view, visit, runScenario, restartTour, labels, shadows, setLabels, setShadows, stay, setStay }: {
+  view: DemoView; visit: (id: DepartmentId, tab?: AgentTab) => void; runScenario: (scenario: Scenario) => void; restartTour: () => void;
   stay: boolean; setStay: (value: boolean) => void;
   labels: boolean; shadows: boolean; setLabels: (value: boolean) => void; setShadows: (value: boolean) => void;
 }) {
-  const { running, statuses, tasks, submit, cancel, overview } = useOfficeStore();
-
-  function run(scenario: Scenario) {
-    if (running) return;
-    void submit(scenario.goal, scenarioExecution(scenario), "ceo");
-    overview();
-    if (!stay) office();
-  }
-
+  const { running, statuses, tasks, cancel } = useOfficeStore();
 
   if (view !== "Scenarios") return <main className="workspace-page" aria-label={view + " page"} key={view}>
     {view === "Projects" && <ProjectsPage visit={visit}/>}
     {view === "Agents" && <AgentsPage visit={visit}/>}
     {view === "Tasks" && <TasksPage/>}
     {view === "Activity" && <ActivityPage/>}
-    {view === "Settings" && <SettingsPage {...{labels, shadows, setLabels, setShadows, stay, setStay}}/>}
+    {view === "Settings" && <SettingsPage {...{labels, shadows, setLabels, setShadows, stay, setStay, restartTour}}/>}
   </main>;
 
   return <main className="workspace-page demo-page" aria-label={`${view} page`}>
@@ -52,7 +44,7 @@ export function DemoPages({ view, visit, office, labels, shadows, setLabels, set
               {active?.status === "running" && <Status value={statuses[step.agent]}/>}</div>)}
           </li>)}</ol>
           <p><strong>Simulated deliverables</strong><br/>{scenario.stages.flat().map(step => step.action).join(" · ")}</p>
-          <button className="ws-button primary" disabled={running} onClick={() => run(scenario)}>Run {scenario.title.toLowerCase()}</button>
+          <button className="ws-button primary" disabled={running} onClick={() => runScenario(scenario)}>Run {scenario.title.toLowerCase()}</button>
         </article>;
       })}</div>
     </>}

@@ -9,10 +9,14 @@ import { useOfficeStore } from "../store/useOfficeStore";
 import { ChatPanel } from "../features/chat/ChatPanel";
 import { OfficeSidebar, type AgentTab } from "../components/OfficeSidebar";
 
+import { Onboarding, firstVisit, rememberOnboarding, tourSteps, type OnboardingScreen } from "../features/onboarding/Onboarding";
+import { scenarios, scenarioExecution } from "../data/scenarios";
+
 export default function App() {
   const statuses = useOfficeStore(s => s.statuses);
   const visit = (id: DepartmentId, tab: AgentTab = "Overview") => { select(id); setAgentTab(tab); setMobilePane(tab === "Overview" ? "office" : "conversation"); setView("Office"); };
   const [view, setView] = useState<"Office" | DemoView>("Office");
+  const [onboarding, setOnboarding] = useState<OnboardingScreen>(() => firstVisit() ? "welcome" : null);
   const [agentTab, setAgentTab] = useState<AgentTab>("Overview");
   const [chatDraft, setChatDraft] = useState("");
   const [mobilePane, setMobilePane] = useState<"office" | "conversation">("office");
@@ -27,6 +31,41 @@ export default function App() {
   const running = useOfficeStore((s) => s.running);
   const tasks = useOfficeStore((s) => s.tasks);
   useEffect(() => { if (focus === 0) setAgentTab("Overview"); }, [focus]);
+  function changeTour(screen: OnboardingScreen) {
+    setOnboarding(screen);
+    if (screen === null || screen === "complete") rememberOnboarding();
+    if (screen === null) {
+      requestAnimationFrame(() => {
+        if (document.activeElement === document.body) {
+          document.querySelector<HTMLElement>('.topbar [aria-current="page"]')?.focus();
+        }
+      });
+    }
+    if (typeof screen !== "number") return;
+    const step = tourSteps[screen];
+    if (step.view === "Office") {
+      overview();
+      setMobilePane(screen === 5 ? "conversation" : "office");
+    }
+    setView(step.view);
+  }
+
+  function runScenario(scenario: (typeof scenarios)[number]) {
+    const { running, submit } = useOfficeStore.getState();
+    if (running) return;
+    void submit(scenario.goal, scenarioExecution(scenario), "ceo");
+    overview();
+    setMobilePane("office");
+    setView(stay ? "Scenarios" : "Office");
+  }
+
+  function exploreOffice() {
+    changeTour(null);
+    overview();
+    setMobilePane("office");
+    setView("Office");
+  }
+
   const active = Object.values(statuses).filter((s) => s === "working").length;
   return (
     <div className={`app-shell ${view !== "Office" ? "workspace-shell" : ""} ${labels ? "" : "quiet-labels"}`}>
@@ -161,8 +200,15 @@ export default function App() {
         </section>
         <OfficeSidebar tab={agentTab} setTab={setAgentTab} draft={chatDraft} setDraft={setChatDraft} close={() => { overview(); setAgentTab("Overview"); setMobilePane("office"); }} />
       </main>
-      {view !== "Office" && <DemoPages view={view} visit={visit} office={() => setView("Office")}
+      {view !== "Office" && <DemoPages view={view} visit={visit} runScenario={runScenario} restartTour={() => changeTour(0)}
         stay={stay} setStay={setStay} labels={labels} shadows={shadows} setLabels={setLabels} setShadows={setShadows} />}
+      {onboarding !== null && <Onboarding screen={onboarding} change={changeTour}
+        explore={exploreOffice}
+        sample={() => { changeTour(null); setView("Scenarios"); }}
+        runReview={() => { changeTour(null); runScenario(scenarios[0]); }}
+        reviewDisabled={running}
+        agents={() => { changeTour(null); setView("Agents"); }}
+        chat={() => { changeTour(null); visit("engineering", "Chat"); }} />}
     </div>
   );
 }
