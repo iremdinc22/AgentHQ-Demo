@@ -1,3 +1,4 @@
+import { WorkflowResults } from "../showcase/Showcase";
 import { useState } from "react";
 import { useOfficeStore } from "../../store/useOfficeStore";
 import { useReviewStore } from "../../store/useReviewStore";
@@ -28,6 +29,6 @@ export function TasksPage() {
  </div><footer className="ws-list-footer"><span>{filtered.length} of {rows.length} loaded {source==="demo"?"demo ":""}tasks</span></footer></section>
  </>}
  {creating&&<TaskComposer close={()=>setCreating(false)}/>}
- {detail&&source!=="reviews"&&<Dialog title={title} close={()=>setDetail(null)} drawer eyebrow="DEMO TASK · SIMULATED">{task&&"prompt" in task?<><Status value={task.status}/><dl className="ws-metadata"><dt>Agent</dt><dd>{departmentById[task.department].animal}</dd><dt>Created</dt><dd>{formatTime(task.createdAt)}</dd><dt>Priority</dt><dd>{task.priority}</dd></dl>{task.status==="running"&&<button className="ws-button" onClick={cancel}>Cancel simulation</button>}<section className="ws-result"><h3>Simulated output</h3>{messages.filter(m=>m.taskId===task.id).map(m=><p key={m.id}>{m.text}</p>)}{!messages.some(m=>m.taskId===task.id)&&<p>No output yet.</p>}</section></>:<p>Task unavailable.</p>}</Dialog>}
+ {detail&&source!=="reviews"&&<Dialog title={title} close={()=>setDetail(null)} drawer eyebrow="DEMO TASK · SIMULATED">{task&&"prompt" in task?<><Status value={task.status}/><dl className="ws-metadata"><dt>Agent</dt><dd>{departmentById[task.department].animal}</dd><dt>Created</dt><dd>{formatTime(task.createdAt)}</dd><dt>Priority</dt><dd>{task.priority}</dd></dl>{task.status==="running"&&<button className="ws-button" onClick={cancel}>Cancel simulation</button>}<section className="ws-result"><h3>Simulated output</h3><WorkflowResults task={task}/>{messages.filter(m=>m.taskId===task.id).map(m=><p key={m.id}>{m.text}</p>)}{!messages.some(m=>m.taskId===task.id)&&<p>No output yet.</p>}</section></>:<p>Task unavailable.</p>}</Dialog>}
  </>;
 }

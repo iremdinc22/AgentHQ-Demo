@@ -139,6 +139,7 @@ export const useOfficeStore = create<OfficeStore>((set, get) => ({
                   id: uid(),
                   timestamp: Date.now(),
                   category: "agent" as const,
+                  taskId: id,
                   department: e.department,
                   text: e.text,
                   time: new Date().toLocaleTimeString([], {

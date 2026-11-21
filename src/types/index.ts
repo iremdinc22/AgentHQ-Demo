@@ -40,6 +40,7 @@ export interface Task {
   simulated: true;
 }
 export interface Activity {
+  taskId?: string;
   timestamp?: number;
   category?: "task" | "agent" | "approval" | "error";
   id: string;

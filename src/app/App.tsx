@@ -10,7 +10,9 @@ import { ChatPanel } from "../features/chat/ChatPanel";
 import { OfficeSidebar, type AgentTab } from "../components/OfficeSidebar";
 
 import { Onboarding, firstVisit, rememberOnboarding, tourSteps, type OnboardingScreen } from "../features/onboarding/Onboarding";
-import { scenarios, scenarioExecution } from "../data/scenarios";
+import { scenarios } from "../data/scenarios";
+
+import { reviewedScenario } from "../features/showcase/workflows";
 
 export default function App() {
   const statuses = useOfficeStore(s => s.statuses);
@@ -22,7 +24,7 @@ export default function App() {
   const [mobilePane, setMobilePane] = useState<"office" | "conversation">("office");
   const [labels, setLabels] = useState(true);
   const [shadows, setShadows] = useState(true);
-  const [stay, setStay] = useState(false);
+  const [stay, setStay] = useState(true);
   const overview = useOfficeStore((s) => s.overview);
   const select = useOfficeStore((s) => s.select);
   const selected = useOfficeStore((s) => s.selected);
@@ -53,7 +55,7 @@ export default function App() {
   function runScenario(scenario: (typeof scenarios)[number]) {
     const { running, submit } = useOfficeStore.getState();
     if (running) return;
-    void submit(scenario.goal, scenarioExecution(scenario), "ceo");
+    void submit(scenario.goal, reviewedScenario(scenario), "ceo");
     overview();
     setMobilePane("office");
     setView(stay ? "Scenarios" : "Office");
@@ -200,7 +202,7 @@ export default function App() {
         </section>
         <OfficeSidebar tab={agentTab} setTab={setAgentTab} draft={chatDraft} setDraft={setChatDraft} close={() => { overview(); setAgentTab("Overview"); setMobilePane("office"); }} />
       </main>
-      {view !== "Office" && <DemoPages view={view} visit={visit} runScenario={runScenario} restartTour={() => changeTour(0)}
+      {view !== "Office" && <DemoPages view={view} visit={visit} runScenario={runScenario} navigate={setView} restartTour={() => changeTour(0)}
         stay={stay} setStay={setStay} labels={labels} shadows={shadows} setLabels={setLabels} setShadows={setShadows} />}
       {onboarding !== null && <Onboarding screen={onboarding} change={changeTour}
         explore={exploreOffice}

@@ -16,15 +16,19 @@ export const decisionHistory = (requests: Approval[], filter: "all" | "approved"
 export const canDecide = (request: Approval) => request.status === "pending";
 interface ReviewStore {
   requests: Approval[];
+  request: (approval: Approval) => void;
+  withdraw: (id: string) => void;
   decide: (id: string, status: "approved" | "rejected", reason?: string) => void;
 }
 export const useReviewStore = create<ReviewStore>((set, get) => ({
   requests: sampleApprovals(),
+  request: approval => set(s => ({ requests: [approval, ...s.requests] })),
+  withdraw: id => set(s => ({ requests: s.requests.filter(r => r.id !== id || r.status !== "pending") })),
   decide: (id, status, reason) => {
     const request = get().requests.find(r => r.id === id);
     if (!request || !canDecide(request)) return;
     const rejectionReason = status === "rejected" ? reason?.trim().slice(0, 1000) || undefined : undefined;
     set(s => ({ requests: s.requests.map(r => r.id === id ? {...r, status, decidedAt: Date.now(), rejectionReason} : r) }));
-    useOfficeStore.getState().recordActivity(request.department, `${request.title}: ${status} (simulated decision; no execution authorized)${rejectionReason ? ` — ${rejectionReason}` : ""}`, "approval");
+    useOfficeStore.getState().recordActivity(request.department, `${request.title}: ${status} (simulated decision; no ${request.taskId ? "real " : ""}execution authorized)${rejectionReason ? ` — ${rejectionReason}` : ""}`, "approval");
   },
 }));

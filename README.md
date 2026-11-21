@@ -14,9 +14,10 @@ This repository contains the standalone, interactive public demo of AgentHQ. The
 
 ## Try a guided handoff
 
-1. Open **Scenarios** and pick a fictional project.
-2. Run the scenario and watch the department badges and Activity feed. Use **Stop simulation** to cancel it.
-3. Open **Tasks** and expand the request to read each synthetic result and the CEO’s combined summary. Visit an agent to see its own conversation, assignments, and activity.
+1. From the office, choose **Explore guided scenarios** and run a fictional project.
+2. Approve the proposed plan to start the simulated specialists. Reject it to stop before delegation, or use **Stop simulation** to cancel.
+3. Select a node to inspect its role, follow the execution timeline, and open simulated deliverables. Copy or download a Markdown document from the scenario or its **Tasks** detail.
+4. Browse **Agents** to try a prefilled example request. Choose **How AgentHQ works** on the scenario page to open the architecture showcase.
 
 | Scenario | Simulated handoff |
 | --- | --- |
@@ -24,7 +25,9 @@ This repository contains the standalone, interactive public demo of AgentHQ. The
 | **Research article preparation** · Lantern Library | Research and Knowledge work in parallel. Content combines their fictional findings. |
 | **Game development planning** · Puddle Post | Game sketches a prototype. Project turns it into milestones. |
 
-![The three guided scenarios and their agent sequences](docs/screenshots/guided-scenarios.jpg)
+![The three guided scenarios and their agent sequences](docs/screenshots/release/parallel-workflow.png)
+
+[Sample deliverable preview](docs/screenshots/release/deliverable.png) · [Architecture showcase](docs/screenshots/release/architecture.png)
 
 ## Meet the team
 
@@ -51,7 +54,7 @@ This repository contains the standalone, interactive public demo of AgentHQ. The
 
 React and TypeScript render the office and its panels. Three.js, React Three Fiber, and Drei provide the procedural scene and camera. Zustand keeps the current session’s conversations, task states, and activity in memory. A shared simulation adapter emits typed status, message, and activity events. The three guided workflows reuse that adapter interface and the same task store as CEO and Direct Mode conversations.
 
-**Implemented here:** the 3D office, agent panels and chat previews, guided collaboration, cancellations, simulated approvals, activity, and reduced-motion-aware agent animations. Desktop users can orbit and zoom. Mobile users can switch between the office and agent view. A department navigator and the simulation remain usable on browsers without WebGL.
+**Implemented here:** the 3D office, agent panels and chat previews, interactive workflow graphs and timelines, cancellations, simulated approval gates, Markdown deliverables, an architecture showcase, activity, and reduced-motion-aware agent animations. Desktop users can orbit and zoom. Mobile users can switch between the office and agent view. A department navigator and the simulation remain usable on browsers without WebGL.
 
 **Private platform and roadmap:** workspace access, persistent tasks, provider settings, and real workflow endpoints are outside this demo. Future demo options include more fictional scenarios and a visual test matrix. Live LLM execution is outside the public simulation. All demo results are authored examples, and reloading clears the session.
 
